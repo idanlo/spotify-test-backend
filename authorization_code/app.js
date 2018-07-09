@@ -17,7 +17,7 @@ var client_id = "4266b38056c54d47a5480dc099f59cb6"; // Your client id
 var client_secret = "9b07b113efcc41dca348cc52d4d2fc1d"; // Your secret
 var dev_redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
 // var redirect_uri = "httpsL//spotify-test-backend/callback";
-var prod_redirect_uri = "https"; //spotify-test-backend/callback";
+var prod_redirect_uri = "http://spotify-test-backend.herokuapp.com/callback";
 
 var dev_baseURL = "http://localhost:3000";
 var prod_baseURL = "https://spotify-test-frontend.herokuapp.com";
