@@ -13,14 +13,21 @@ var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 
+var mode = "dev"; // "dev" or "prod"
+
+var modes = {
+    prod: {
+        baseURL: "https://spotify-test-frontend.herokuapp.com",
+        redirect_uri: "http://spotify-test-backend.herokuapp.com/callback"
+    },
+    dev: {
+        baseURL: "http://localhost:3000",
+        redirect_uri: "http://localhost:8888/callback"
+    }
+};
+
 var client_id = "4266b38056c54d47a5480dc099f59cb6"; // Your client id
 var client_secret = "9b07b113efcc41dca348cc52d4d2fc1d"; // Your secret
-var dev_redirect_uri = "http://localhost:8888/callback"; // Your redirect uri
-// var redirect_uri = "httpsL//spotify-test-backend/callback";
-var prod_redirect_uri = "http://spotify-test-backend.herokuapp.com/callback";
-
-var dev_baseURL = "http://localhost:3000";
-var prod_baseURL = "https://spotify-test-frontend.herokuapp.com";
 
 /**
  * Generates a random string containing numbers and letters
@@ -59,7 +66,7 @@ app.get("/login", function(req, res) {
                 response_type: "code",
                 client_id: client_id,
                 scope: scope,
-                redirect_uri: prod_redirect_uri,
+                redirect_uri: modes[mode].redirect_uri,
                 state: state
             })
     );
@@ -86,7 +93,7 @@ app.get("/callback", function(req, res) {
             url: "https://accounts.spotify.com/api/token",
             form: {
                 code: code,
-                redirect_uri: prod_redirect_uri,
+                redirect_uri: modes[mode].redirect_uri,
                 grant_type: "authorization_code"
             },
             headers: {
@@ -117,7 +124,7 @@ app.get("/callback", function(req, res) {
 
                 // we can also pass the token to the browser to make requests from there
                 res.redirect(
-                    prod_baseURL +
+                    modes[mode].baseURL +
                         "/#" +
                         querystring.stringify({
                             access_token: access_token,
@@ -126,7 +133,7 @@ app.get("/callback", function(req, res) {
                 );
             } else {
                 res.redirect(
-                    prod_baseURL +
+                    modes[mode].baseURL +
                         "/#" +
                         querystring.stringify({
                             error: "invalid_token"
