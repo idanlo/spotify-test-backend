@@ -13,7 +13,7 @@ var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 
-var mode = "dev"; // "dev" or "prod"
+var mode = "prod"; // "dev" or "prod"
 
 var modes = {
     prod: {
