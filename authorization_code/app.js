@@ -12,22 +12,24 @@ var request = require("request"); // "Request" library
 var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
+var dotenv = require("dotenv");
+dotenv.config();
 
-var mode = "prod"; // "dev" or "prod"
+var mode = process.env.MODE; // "dev" or "prod"
 
 var modes = {
     prod: {
-        baseURL: "https://spotify-test-frontend.herokuapp.com",
-        redirect_uri: "http://spotify-test-backend.herokuapp.com/callback"
+        baseURL: process.env.PROD_BASE_URL,
+        redirect_uri: process.env.PROD_REDIRECT_URI
     },
     dev: {
-        baseURL: "http://localhost:3000",
-        redirect_uri: "http://localhost:8888/callback"
+        baseURL: process.env.DEV_BASE_URL,
+        redirect_uri: process.env.DEV_REDIRECT_URI
     }
 };
 
-var client_id = "4266b38056c54d47a5480dc099f59cb6"; // Your client id
-var client_secret = "9b07b113efcc41dca348cc52d4d2fc1d"; // Your secret
+var client_id = process.env.CLIENT_ID; // Your client id
+var client_secret = process.env.CLIENT_SECRET; // Your secret
 
 /**
  * Generates a random string containing numbers and letters
@@ -70,6 +72,30 @@ app.get("/login", function(req, res) {
                 state: state
             })
     );
+});
+
+app.post("/refresh", function(req, res) {
+    req.on("data", function(data) {
+        var token = JSON.parse(data).refresh_token;
+        var authOptions = {
+            url: "https://accounts.spotify.com/api/token",
+            form: {
+                refresh_token: token,
+                grant_type: "refresh_token"
+            },
+            headers: {
+                Authorization:
+                    "Basic " +
+                    new Buffer(client_id + ":" + client_secret).toString(
+                        "base64"
+                    )
+            },
+            json: true
+        };
+        request.post(authOptions, function(err, response, body) {
+            res.json(response.body);
+        });
+    });
 });
 
 app.get("/callback", function(req, res) {
